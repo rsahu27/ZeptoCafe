@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zepto Cafe — Building the Repeat Ordering Habit | PM Case Study</title>
+<meta name="description" content="A product management case study on improving Zepto Cafe's 30-day repeat ordering rate from 12% to 25% — research, problem framing, solutioning, PRD, prototypes, GTM, metrics and risks.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#5C1D91;
+  --purple-d:#3A0F5F;
+  --purple-dd:#1A0A30;
+  --purple-l:#E6D2FF;
+  --purple-ll:#F5EFFF;
+  --amber:#FFA01E;
+  --amber-d:#E08A0A;
+  --amber-l:#FFF0C0;
+  --green:#2EA05A;
+  --off:#FAF8FF;
+  --gl:#F0EDF8;
+  --gm:#B4AACE;
+  --gd:#645A78;
+  --ink:#140F23;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--ink);}
+
+/* ───────── Top Nav ───────── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(26,10,48,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08);}
+.nav-inner{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--amber) 0%,#FF7A00 100%);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 14px rgba(255,160,30,.35);}
+.logo-text{font-weight:800;font-size:17px;color:#fff;letter-spacing:.3px;}
+.logo-text span{color:var(--amber);}
+.nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+.nav-links a{color:var(--gm);text-decoration:none;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:100px;transition:all .2s;}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.1);}
+
+/* ───────── Hero ───────── */
+.hero{background:radial-gradient(ellipse at 20% -20%,rgba(92,29,145,.75) 0%,transparent 55%),radial-gradient(ellipse at 85% 10%,rgba(255,160,30,.18) 0%,transparent 45%),var(--purple-dd);padding:76px 24px 90px;text-align:center;position:relative;overflow:hidden;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,160,30,.14);border:1px solid rgba(255,160,30,.4);color:var(--amber);font-size:12px;font-weight:700;padding:7px 18px;border-radius:100px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:26px;}
+.hero h1{font-size:clamp(30px,5.4vw,54px);font-weight:900;color:#fff;line-height:1.12;max-width:820px;margin:0 auto 18px;}
+.hero h1 em{font-style:normal;color:var(--amber);}
+.hero-sub{font-size:clamp(14px,2vw,17px);color:var(--gm);max-width:660px;margin:0 auto 38px;line-height:1.7;font-weight:400;}
+.hero-sub strong{color:#fff;font-weight:600;}
+.hero-stats{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:42px;}
+.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px 26px;min-width:150px;}
+.stat-val{font-size:24px;font-weight:800;color:var(--amber);}
+.stat-label{font-size:11px;color:var(--gm);font-weight:500;margin-top:3px;letter-spacing:.4px;}
+.hero-ctas{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:14px;padding:13px 28px;border-radius:100px;transition:all .2s;}
+.btn-amber{background:linear-gradient(135deg,var(--amber) 0%,#FF7A00 100%);color:#fff;box-shadow:0 8px 24px rgba(255,160,30,.35);}
+.btn-amber:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,160,30,.5);}
+.btn-ghost{background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.22);}
+.btn-ghost:hover{background:rgba(255,255,255,.14);}
+.hero-meta{margin-top:44px;font-size:12.5px;color:var(--gd);font-weight:500;}
+.hero-meta b{color:var(--gm);font-weight:600;}
+
+/* ───────── Main body ───────── */
+.main{background:var(--off);border-radius:36px 36px 0 0;margin-top:-34px;position:relative;padding:64px 24px 30px;}
+.wrap{max-width:1100px;margin:0 auto;}
+.section{margin-bottom:74px;scroll-margin-top:90px;}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;}
+.sec-num{background:var(--purple);color:#fff;font-size:12px;font-weight:800;padding:5px 14px;border-radius:100px;letter-spacing:1px;white-space:nowrap;}
+.sec-head h2{font-size:clamp(21px,3vw,28px);font-weight:800;color:var(--ink);}
+.sec-desc{font-size:14.5px;color:var(--gd);line-height:1.7;max-width:760px;margin-bottom:28px;}
+
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.card{background:#fff;border:1px solid var(--gl);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px;transition:all .25s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--purple),var(--amber));opacity:0;transition:opacity .25s;}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(92,29,145,.13);border-color:var(--purple-l);}
+.card:hover::before{opacity:1;}
+.card-icon{width:46px;height:46px;border-radius:13px;background:var(--purple-ll);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.card-tag{position:absolute;top:22px;right:22px;font-size:10px;font-weight:800;letter-spacing:1px;color:var(--purple);background:var(--purple-ll);padding:4px 12px;border-radius:100px;text-transform:uppercase;}
+.card h3{font-size:16.5px;font-weight:700;color:var(--ink);line-height:1.35;padding-right:56px;}
+.card p{font-size:13px;color:var(--gd);line-height:1.65;flex:1;}
+.card-link{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:700;color:var(--purple);text-decoration:none;margin-top:2px;}
+.card-link:hover{color:var(--amber-d);}
+.card-link svg{transition:transform .2s;}
+.card-link:hover svg{transform:translateX(3px);}
+
+/* survey highlight cards */
+.card.survey{background:linear-gradient(135deg,#FFFDF6 0%,#FFF7E4 100%);border-color:#F4E3B8;}
+.card.survey .card-icon{background:var(--amber-l);}
+.card.survey .card-tag{color:var(--amber-d);background:var(--amber-l);}
+.card.survey .card-link{color:var(--amber-d);}
+
+/* design / prototype cards */
+.card.design{background:linear-gradient(160deg,#FBF8FF 0%,#F3EBFF 100%);border-color:#E4D5F7;}
+
+/* journey strip */
+.journey{background:linear-gradient(135deg,var(--purple-d) 0%,var(--purple) 100%);border-radius:24px;padding:34px 30px;margin-bottom:74px;box-shadow:0 20px 50px rgba(58,15,95,.3);}
+.journey h2{color:#fff;font-size:19px;font-weight:800;margin-bottom:6px;}
+.journey p{color:var(--purple-l);font-size:13px;margin-bottom:24px;}
+.j-steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
+.j-step{flex:1;min-width:104px;text-align:center;text-decoration:none;}
+.j-bubble{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;margin:0 auto 8px;transition:all .2s;}
+.j-step:hover .j-bubble{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 6px rgba(255,160,30,.25);}
+.j-label{font-size:10.5px;color:var(--purple-l);font-weight:600;line-height:1.4;display:block;}
+
+/* footer */
+.footer{background:var(--purple-dd);padding:44px 24px;text-align:center;}
+.footer .logo{justify-content:center;margin-bottom:14px;}
+.footer p{color:var(--gd);font-size:12.5px;line-height:1.8;}
+.footer a{color:var(--amber);text-decoration:none;font-weight:600;}
+.footer a:hover{text-decoration:underline;}
+
+@media(max-width:640px){
+  .nav-links{display:none;}
+  .card h3{padding-right:0;}
+  .card-tag{position:static;align-self:flex-start;order:-1;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="logo" href="#top">
+      <div class="logo-mark">☕</div>
+      <div class="logo-text">zepto <span>cafe</span></div>
+    </a>
+    <div class="nav-links">
+      <a href="#research">Research</a>
+      <a href="#survey">Survey</a>
+      <a href="#problem">Problem</a>
+      <a href="#solution">Solutions</a>
+      <a href="#prd">PRD &amp; Design</a>
+      <a href="#gtm">GTM</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#risks">Risks</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<header class="hero" id="top">
+  <div class="hero-badge">☕ PM Case Study · Airtribe PM Launchpad</div>
+  <h1>Zepto Cafe — Building the <em>Repeat Ordering</em> Habit</h1>
+  <p class="hero-sub">Zepto Cafe wins the trial but loses the habit. This end-to-end case study diagnoses why office workers don't come back for a second order — and designs the habit loop that brings them back, moving the <strong>30-day repeat rate from 12% → 25%</strong>.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">12% → 25%</div><div class="stat-label">Target 30-day repeat rate</div></div>
+    <div class="stat"><div class="stat-val">15</div><div class="stat-label">Valid survey respondents</div></div>
+    <div class="stat"><div class="stat-val">6</div><div class="stat-label">Cities covered</div></div>
+    <div class="stat"><div class="stat-val">15 → 2</div><div class="stat-label">Solutions RICE-shortlisted</div></div>
+  </div>
+  <div class="hero-ctas">
+    <a class="btn btn-amber" href="Zepto_Cafe_PRD.pdf" target="_blank">📄 Read the PRD</a>
+    <a class="btn btn-ghost" href="#prd">🎨 View Prototypes</a>
+  </div>
+  <div class="hero-meta"><b>Rishi Raj Sahu</b> · Product Management Case Study · July 2026</div>
+</header>
+
+<main class="main">
+  <div class="wrap">
+
+    <!-- ═══════ JOURNEY ═══════ -->
+    <div class="journey">
+      <h2>The Case Study Journey</h2>
+      <p>Seven steps, from primary research to risk assessment — every claim traced back to evidence.</p>
+      <div class="j-steps">
+        <a class="j-step" href="#research"><div class="j-bubble">1</div><span class="j-label">Market &amp; User Research</span></a>
+        <a class="j-step" href="#problem"><div class="j-bubble">2</div><span class="j-label">Frame the Problem</span></a>
+        <a class="j-step" href="#solution"><div class="j-bubble">3</div><span class="j-label">Ideation &amp; RICE</span></a>
+        <a class="j-step" href="#prd"><div class="j-bubble">4</div><span class="j-label">PRD, Wireframes &amp; Prototype</span></a>
+        <a class="j-step" href="#gtm"><div class="j-bubble">5</div><span class="j-label">GTM Strategy</span></a>
+        <a class="j-step" href="#metrics"><div class="j-bubble">6</div><span class="j-label">Metrics</span></a>
+        <a class="j-step" href="#risks"><div class="j-bubble">7</div><span class="j-label">Risks &amp; Trade-offs</span></a>
+      </div>
+    </div>
+
+    <!-- ═══════ STEP 1 ═══════ -->
+    <section class="section" id="research">
+      <div class="sec-head"><span class="sec-num">STEP 1</span><h2>Market &amp; User Research</h2></div>
+      <p class="sec-desc">Primary research across Bengaluru, Delhi/NCR, Hyderabad, Pune, Mumbai and Ahmedabad with office-going and hybrid workers aged 22–34. Remote workers were screened out to keep the sample true to Zepto Cafe's core use case — plus a competitive teardown of how rivals drive repeat ordering.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">🔍</div>
+          <h3>Market &amp; User Research Report</h3>
+          <p>Existing snack habits, workday rituals, and what Zepto Cafe actually competes against — the entrenched chai-break behaviours of Indian office workers.</p>
+          <a class="card-link" href="Market_User_Research.pdf" target="_blank">Open report <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">⚔️</div>
+          <h3>Competitive Analysis</h3>
+          <p>How Swiggy, Zomato, Blinkit and Starbucks drive repeat ordering — and where Zepto Cafe sits at the confusing intersection of food delivery and quick commerce.</p>
+          <a class="card-link" href="Competitive_Analysis.pdf" target="_blank">Open analysis <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ SURVEY ═══════ -->
+    <section class="section" id="survey">
+      <div class="sec-head"><span class="sec-num">PRIMARY DATA</span><h2>The Survey</h2></div>
+      <p class="sec-desc">The research above is grounded in a structured survey of office and hybrid workers. Explore the questionnaire that was fielded, and the raw responses that every downstream claim traces back to.</p>
+      <div class="grid">
+        <div class="card survey">
+          <span class="card-tag">Google Form</span>
+          <div class="card-icon">📝</div>
+          <h3>Survey Questionnaire</h3>
+          <p>The full questionnaire fielded to respondents — screener questions, snack-habit probes, and Zepto Cafe usage &amp; drop-off questions.</p>
+          <a class="card-link" href="https://docs.google.com/forms/d/e/1FAIpQLSeKxUCoNAA3Y1OpJaYV7S-akX1ZNb5fkioGVw2wbIIvjlluHw/viewform" target="_blank" rel="noopener">View questionnaire <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="card survey">
+          <span class="card-tag">Google Sheet</span>
+          <div class="card-icon">📊</div>
+          <h3>Survey Responses</h3>
+          <p>Raw response data — 15 valid office/hybrid respondents after screening out remote workers. The evidence base behind the trial–repeat gap finding.</p>
+          <a class="card-link" href="https://docs.google.com/spreadsheets/d/1PgDcvAOAR3xGaBCIN4VVaZPE_1mI9Q_M2TYs7_k8YHs/edit?usp=sharing" target="_blank" rel="noopener">View responses <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 2 ═══════ -->
+    <section class="section" id="problem">
+      <div class="sec-head"><span class="sec-num">STEP 2</span><h2>Frame the Problem</h2></div>
+      <p class="sec-desc">Articulating why office workers don't return for a second order. Grounded entirely in the primary research and competitive analysis — the trial–repeat gap emerges as the single most important structural finding of the case study.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">🎯</div>
+          <h3>Problem Framing Document</h3>
+          <p>The trial–repeat gap, the friction points that cause it, and a precisely-scoped problem statement — every claim traced back to evidence.</p>
+          <a class="card-link" href="Frame_the_Problem.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 3 ═══════ -->
+    <section class="section" id="solution">
+      <div class="sec-head"><span class="sec-num">STEP 3</span><h2>Solution Ideation &amp; Prioritization</h2></div>
+      <p class="sec-desc">15 product interventions ideated against the friction points from Step 2, scored with the RICE framework, and shortlisted to the 2 solutions that were carried into the PRD: <strong>S5 — Your Usual Reorder Card</strong> and <strong>S1 — Chai O'Clock Push Notification</strong>.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">💡</div>
+          <h3>Ideation &amp; RICE Prioritization</h3>
+          <p>All 15 interventions grouped by friction point, full RICE scoring methodology, and the rationale behind the final shortlist of two.</p>
+          <a class="card-link" href="Solution_Ideation_Prioritization.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 4: PRD + DESIGN ═══════ -->
+    <section class="section" id="prd">
+      <div class="sec-head"><span class="sec-num">STEP 4</span><h2>PRD, Wireframes &amp; Prototype</h2></div>
+      <p class="sec-desc">The two shortlisted solutions specified end-to-end: a full Product Requirements Document, low-fidelity wireframes of every screen, and two clickable prototype walkthroughs covering the complete user flow of each solution.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF · 18 pages</span>
+          <div class="card-icon">📄</div>
+          <h3>Product Requirements Document</h3>
+          <p>Retention &amp; Habit Loop PRD — user stories, functional requirements, edge cases and success criteria for S5 (Your Usual Reorder Card) and S1 (Chai O'Clock Push).</p>
+          <a class="card-link" href="Zepto_Cafe_PRD.pdf" target="_blank">Read the PRD <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="card design">
+          <span class="card-tag">Wireframes</span>
+          <div class="card-icon">✏️</div>
+          <h3>Zepto Cafe Wireframes</h3>
+          <p>Low-fidelity wireframes of all screens across both solutions — the structural blueprint before visual design, viewable right in your browser.</p>
+          <a class="card-link" href="Zepto%20Cafe%20Wireframes.html" target="_blank">Explore wireframes <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="card design">
+          <span class="card-tag">Prototype · S1</span>
+          <div class="card-icon">🔔</div>
+          <h3>S1 — Chai O'Clock Push</h3>
+          <p>Full user-flow prototype of the contextual push notification that lands exactly at the office chai break — from trigger to delivered order.</p>
+          <a class="card-link" href="Prototype/S1_Combined_User_Flow.html" target="_blank">Walk the flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="card design">
+          <span class="card-tag">Prototype · S5</span>
+          <div class="card-icon">🔁</div>
+          <h3>S5 — Your Usual Reorder Card</h3>
+          <p>Full user-flow prototype of the one-tap reorder card that resurfaces a user's usual order — collapsing the repeat purchase into a single decision.</p>
+          <a class="card-link" href="Prototype/S5_Combined_User_Flow.html" target="_blank">Walk the flow <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 5 ═══════ -->
+    <section class="section" id="gtm">
+      <div class="sec-head"><span class="sec-num">STEP 5</span><h2>GTM Strategy, Growth Loop &amp; Monetization</h2></div>
+      <p class="sec-desc">How repeat ordering launches, grows, and creates business impact — the go-to-market plan, the self-reinforcing growth loop, and the monetization story behind the 12% → 25% target.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">🚀</div>
+          <h3>GTM Strategy Document</h3>
+          <p>Launch phasing, growth loop design, and monetization levers — defining how the habit loop compounds into business value.</p>
+          <a class="card-link" href="GTM_Strategy.pdf" target="_blank">Open strategy <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 6 ═══════ -->
+    <section class="section" id="metrics">
+      <div class="sec-head"><span class="sec-num">STEP 6</span><h2>Metrics &amp; Success Measurement</h2></div>
+      <p class="sec-desc">How we know the habit loop is working — and how we protect what we already have. North-star and guardrail metrics, instrumentation, and the measurement plan for the 30-day repeat rate.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">📈</div>
+          <h3>Metrics &amp; Measurement Plan</h3>
+          <p>Success metrics, counter-metrics and guardrails — a measurement framework that proves impact without cannibalising existing behaviour.</p>
+          <a class="card-link" href="Metrics_Success_Measurement.pdf" target="_blank">Open plan <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ STEP 7 ═══════ -->
+    <section class="section" id="risks">
+      <div class="sec-head"><span class="sec-num">STEP 7</span><h2>Risks, Trade-offs &amp; Constraints</h2></div>
+      <p class="sec-desc">Demonstrating PM judgment: what could fail, what we deliberately chose not to optimise for, and the constraints that shaped every solution decision along the way.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="card-tag">PDF</span>
+          <div class="card-icon">⚖️</div>
+          <h3>Risks &amp; Trade-offs Document</h3>
+          <p>Failure modes, mitigations, explicit non-goals, and the constraints that filtered the solution space from day one.</p>
+          <a class="card-link" href="Risks_Tradeoffs_Constraints.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer class="footer">
+  <a class="logo" href="#top">
+    <div class="logo-mark">☕</div>
+    <div class="logo-text">zepto <span>cafe</span></div>
+  </a>
+  <p>Zepto Cafe — Building the Repeat Ordering Habit · A Product Management Case Study<br>
+  Rishi Raj Sahu · Airtribe PM Launchpad · July 2026 · <a href="https://github.com/rsahu27/ZeptoCafe" target="_blank" rel="noopener">View on GitHub</a></p>
+</footer>
+
+</body>
+</html>

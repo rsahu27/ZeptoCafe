@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1 · Chai O'Clock Push — Full User Flow</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --purple:#5C1D91;--purple-d:#3A0F5F;--purple-l:#E6D2FF;--purple-ll:#F5EFFF;
+  --amber:#FFA01E;--amber-l:#FFF0C0;--green:#2EA05A;--red:#C62828;--red-l:#FFEBEE;
+  --off:#FAF8FF;--gl:#F0EDF8;--gm:#B4AACE;--gd:#645A78;--black:#140F23;
+  --lock:#1A1A2E;
+}
+body{font-family:'Poppins',sans-serif;background:#1A0A30;min-height:100vh;padding:24px 20px 60px;display:flex;flex-direction:column;align-items:center;}
+
+/* ── Solution Card ── */
+.solution-card{width:764px;background:linear-gradient(135deg,#0D1B2A 0%,#1A2F5E 50%,#2A3F80 100%);border-radius:24px;padding:24px 28px;margin-bottom:16px;box-shadow:0 16px 48px rgba(26,47,94,.6);}
+.sc-badge{background:var(--amber);color:#fff;font-size:13px;font-weight:800;padding:4px 14px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.sc-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;}
+.sc-title{font-size:20px;font-weight:800;color:#fff;line-height:1.2;}
+.sc-obj{font-size:12px;color:#A8C0FF;margin-top:4px;line-height:1.5;}
+.sc-metrics{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.sc-metric{background:rgba(255,255,255,.1);border-radius:12px;padding:8px 14px;display:flex;align-items:center;gap:8px;}
+.sc-metric-label{font-size:10px;color:#A8C0FF;font-weight:500;}
+.sc-metric-val{font-size:14px;font-weight:700;color:#fff;}
+.sc-frs{display:flex;gap:8px;flex-wrap:wrap;}
+.sc-fr-pill{background:rgba(255,255,255,.12);color:#A8C0FF;font-size:11px;font-weight:700;padding:3px 12px;border-radius:100px;letter-spacing:.5px;}
+
+/* ── Flow Map ── */
+.flow-map{width:764px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;overflow-x:auto;gap:4px;}
+.fn{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;}
+.fn-bubble{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;color:#8899BB;letter-spacing:.2px;text-align:center;line-height:1.3;transition:all .3s;}
+.fn.active .fn-bubble{background:#1A3A7A;border-color:#4A7AD0;color:#fff;box-shadow:0 0 0 5px rgba(74,122,208,.25);}
+.fn.done .fn-bubble{background:var(--green);border-color:var(--green);color:#fff;}
+.fn-label{font-size:9.5px;color:#8899BB;text-align:center;line-height:1.4;font-weight:500;white-space:nowrap;}
+.fn.active .fn-label{color:#fff;font-weight:600;}
+.fn.done .fn-label{color:var(--green);}
+.fn-side{font-size:8px;color:var(--amber);font-weight:700;text-align:center;margin-top:2px;}
+.flow-arrow{color:rgba(255,255,255,.2);font-size:16px;flex-shrink:0;padding:0 2px;}
+.flow-arrow.done{color:var(--green);}
+
+/* ── Main Layout ── */
+.main-layout{display:flex;gap:16px;align-items:flex-start;}
+
+/* ── Scenario Panel ── */
+.scenario-panel{width:340px;display:flex;flex-direction:column;gap:10px;flex-shrink:0;}
+.step-box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:14px;transition:all .3s;}
+.step-box.locked{opacity:.4;pointer-events:none;}
+.step-box.current{border-color:rgba(74,122,208,.5);background:rgba(26,58,122,.15);}
+.step-box.completed{border-color:rgba(46,160,90,.4);}
+.step-box-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sbn{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.sbn.active{background:#1A3A7A;color:#fff;}
+.sbn.done{background:var(--green);color:#fff;}
+.sbn.gray{background:rgba(255,255,255,.15);color:#8899BB;}
+.step-box-title{font-size:12px;font-weight:700;color:#fff;}
+.step-box-fr{font-size:10px;color:var(--amber);font-weight:600;margin-top:1px;}
+.sc-radio-group{display:flex;flex-direction:column;gap:5px;}
+.sc-radio{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-radius:11px;cursor:pointer;border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);transition:all .2s;}
+.sc-radio:hover{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.07);}
+.sc-radio.selected{border-color:#4A7AD0;background:rgba(26,58,122,.3);}
+.sc-radio input{display:none;}
+.sc-radio-dot{width:13px;height:13px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;margin-top:2px;transition:all .2s;}
+.sc-radio.selected .sc-radio-dot{border-color:#4A7AD0;background:#4A7AD0;}
+.sc-radio-label{font-size:11px;color:#A8BCEE;line-height:1.5;}
+.sc-radio.selected .sc-radio-label{color:#fff;}
+.sc-radio-fr{font-size:10px;font-weight:700;color:var(--amber);margin-top:2px;}
+.locked-msg{font-size:11px;color:rgba(168,192,255,.35);font-style:italic;padding:2px 0;}
+.side-callout{background:rgba(255,160,30,.1);border:1px solid rgba(255,160,30,.3);border-radius:11px;padding:10px 13px;font-size:11px;color:#FFD080;line-height:1.5;}
+.side-callout b{font-weight:700;color:var(--amber);}
+
+/* ── Phone ── */
+.phone{width:390px;height:844px;background:var(--lock);border-radius:50px;overflow:hidden;position:relative;flex-shrink:0;
+  box-shadow:0 40px 100px rgba(26,58,122,.6),0 0 0 10px #0D0D1A,0 0 0 12px #1A1A30;}
+.phone::before{content:'';position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:28px;background:#000;border-radius:20px;z-index:300;}
+
+/* Status bar */
+.sb-lock{height:48px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 8px;font-size:13px;font-weight:600;color:#fff;}
+.sb-light{height:48px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 8px;font-size:13px;font-weight:600;color:var(--black);}
+
+/* FR Info Banner */
+.fr-info-bar{padding:6px 14px;display:flex;align-items:center;gap:8px;position:sticky;top:48px;z-index:20;}
+.fr-info-dark{background:rgba(74,122,208,.2);border-bottom:1px solid rgba(74,122,208,.3);}
+.fr-info-light{background:rgba(92,29,145,.08);border-bottom:1px solid var(--purple-l);}
+.fr-badge-sm{font-size:9px;font-weight:800;padding:2px 8px;border-radius:100px;letter-spacing:.5px;white-space:nowrap;}
+.fr-badge-blue{background:#1A3A7A;color:#A8C8FF;}
+.fr-badge-purple{background:var(--purple);color:#fff;}
+.fr-badge-amber{background:var(--amber);color:#fff;}
+.fr-info-desc{font-size:10px;font-weight:500;line-height:1.3;}
+.fr-info-desc-dark{color:#A8C0FF;}
+.fr-info-desc-light{color:var(--purple-d);}
+
+/* Lock screen */
+.lock-screen{position:absolute;inset:0;background:linear-gradient(160deg,#0D1B2E 0%,#1A2845 100%);z-index:1;}
+.lock-time{text-align:center;padding:70px 0 14px;font-size:52px;font-weight:300;color:#fff;line-height:1;}
+.lock-date{text-align:center;font-size:14px;color:rgba(255,255,255,.6);}
+.push-notif{background:rgba(255,255,255,.12);backdrop-filter:blur(16px);border-radius:18px;margin:16px;padding:14px;border:1px solid rgba(255,255,255,.15);}
+.push-app-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.push-app-icon{width:24px;height:24px;background:var(--purple);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.push-app-name{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);}
+.push-time{font-size:11px;color:rgba(255,255,255,.45);margin-left:auto;}
+.push-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px;}
+.push-body{font-size:12px;color:rgba(255,255,255,.75);line-height:1.5;}
+.push-blocked{opacity:.4;position:relative;}
+.push-blocked::after{content:'BLOCKED · FR-07';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#C62828;color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:100px;letter-spacing:.5px;}
+.lock-hint{text-align:center;font-size:12px;color:rgba(255,255,255,.35);margin-top:16px;}
+.tap-push-btn{display:block;width:calc(100% - 32px);margin:8px 16px 0;background:rgba(74,122,208,.25);border:1px solid rgba(74,122,208,.5);color:#A8C8FF;font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;padding:11px;border-radius:14px;cursor:pointer;transition:all .2s;}
+.tap-push-btn:active{transform:scale(.97);background:rgba(74,122,208,.4);}
+.tap-push-btn:disabled{opacity:.35;cursor:not-allowed;}
+.no-push-msg{margin:20px 16px;background:rgba(198,40,40,.1);border:1px solid rgba(198,40,40,.3);border-radius:14px;padding:16px;text-align:center;color:#FF8A80;font-size:12px;line-height:1.6;}
+.eligibility-table{margin:12px 16px;background:rgba(255,255,255,.06);border-radius:12px;overflow:hidden;}
+.et-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.06);font-size:11px;}
+.et-row:last-child{border-bottom:none;}
+.et-key{color:rgba(255,255,255,.6);}
+.et-pass{color:#69F0AE;font-weight:700;}
+.et-fail{color:#FF5252;font-weight:700;}
+
+/* App panels */
+.app-panel{position:absolute;inset:0;background:var(--off);z-index:150;transform:translateX(100%);transition:transform .32s cubic-bezier(.25,1,.5,1);overflow-y:auto;}
+.app-panel.show{transform:translateX(0);}
+.login-panel{position:absolute;inset:0;background:var(--off);z-index:160;transform:translateX(100%);transition:transform .32s cubic-bezier(.25,1,.5,1);overflow-y:auto;}
+.login-panel.show{transform:translateX(0);}
+.deep-link-banner{background:rgba(26,58,122,.1);border-bottom:1px solid rgba(74,122,208,.2);padding:8px 16px;display:flex;align-items:center;gap:8px;font-size:11px;color:#1A3A7A;font-weight:600;}
+
+/* Cart/confirm (reuse S5 styles) */
+.panel{position:absolute;inset:0;background:var(--off);z-index:170;transform:translateX(100%);transition:transform .32s cubic-bezier(.25,1,.5,1);overflow-y:auto;}
+.panel.show{transform:translateX(0);}
+.panel-cart{z-index:175;}
+.panel-confirmed{z-index:180;}
+.settings-panel{position:absolute;inset:0;background:var(--off);z-index:190;transform:translateX(100%);transition:transform .32s cubic-bezier(.25,1,.5,1);overflow-y:auto;}
+.settings-panel.show{transform:translateX(0);}
+
+/* Toast */
+.toast{position:absolute;top:56px;left:16px;right:16px;background:var(--green);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:10px;color:#fff;font-size:13px;font-weight:500;transform:translateY(-130%);opacity:0;z-index:250;transition:all .32s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 24px rgba(46,160,90,.4);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* Modal */
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:230;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-backdrop.show{opacity:1;pointer-events:all;}
+.modal{background:#fff;border-radius:28px 28px 0 0;padding:24px;}
+.modal-btn{width:100%;padding:13px;border:none;border-radius:100px;font-size:14px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;margin-bottom:8px;transition:all .15s;}
+.modal-btn:active{transform:scale(.97);}
+
+/* UI bits */
+.back-btn{background:none;border:none;font-size:22px;font-weight:700;color:var(--black);cursor:pointer;font-family:'Poppins',sans-serif;}
+.reorder-btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:100px;padding:13px;font-size:14px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;margin-top:14px;transition:all .15s;}
+.reorder-btn:active{transform:scale(.97);}
+.reorder-btn.loading{background:#7B3FC4;pointer-events:none;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.error-card{background:var(--red-l);border-radius:14px;padding:14px 16px;margin-top:12px;border:1px solid #FFCDD2;}
+.retry-btn{background:var(--red);color:#fff;border:none;border-radius:100px;padding:10px 24px;font-size:13px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;}
+.place-btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:100px;padding:16px;font-size:15px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;transition:all .15s;}
+.place-btn:active{transform:scale(.97);}
+.bill{background:#fff;border-radius:16px;margin:12px 16px;padding:16px;box-shadow:0 4px 16px rgba(92,29,145,.08);}
+.bill-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;}
+.bill-total{border-top:1px solid var(--gl);margin-top:8px;padding-top:12px;font-weight:700;font-size:14px;}
+.cart-item-wrap{background:#fff;border-radius:16px;margin:0 16px;padding:16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(92,29,145,.1);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-radius:14px;margin:0 16px 10px;}
+.toggle{position:relative;width:46px;height:26px;flex-shrink:0;}
+.toggle input{display:none;}
+.toggle-track{width:46px;height:26px;background:#ccc;border-radius:100px;transition:background .2s;cursor:pointer;}
+.toggle-track.on{background:var(--purple);}
+.toggle-knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle-track.on + .toggle-knob, .toggle-knob.on{left:23px;}
+.ac-note{margin:8px 16px;padding:9px 13px;border-radius:11px;font-size:10px;font-weight:600;line-height:1.5;}
+.note-green{background:#E8F8EF;color:var(--green);}
+.note-amber{background:#FFF8E1;color:#856A00;}
+.note-red{background:var(--red-l);color:var(--red);}
+.note-blue{background:#E3F2FF;color:#0D47A1;}
+.bnav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--gl);display:grid;grid-template-columns:repeat(4,1fr);padding:8px 0 20px;z-index:24;}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;color:var(--gm);cursor:pointer;}
+.ni.active{color:var(--purple);}
+.ni .ico{font-size:20px;}
+.rc{background:#fff;border-radius:20px;margin:0 16px;box-shadow:0 8px 32px rgba(92,29,145,.15);overflow:hidden;}
+.rc-hdr{padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.rc-hdr.primary{background:var(--purple);}
+.rc-hdr.fallback{background:#5D4037;}
+.pill{background:rgba(255,255,255,.2);color:#fff;padding:2px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.5px;}
+.item-row{display:flex;align-items:center;gap:14px;}
+.item-icon{width:64px;height:64px;border-radius:16px;background:var(--amber-l);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;}
+.item-name{font-size:17px;font-weight:700;color:var(--black);}
+.item-sub{font-size:12px;color:var(--gd);margin-top:2px;}
+.item-price{font-size:20px;font-weight:700;color:var(--purple);margin-top:4px;}
+.ab{background:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--gl);position:sticky;top:48px;z-index:24;}
+</style>
+</head>
+<body>
+
+<!-- ═══ SOLUTION CARD ═══ -->
+<div class="solution-card">
+  <div class="sc-top">
+    <span class="sc-badge">S1</span>
+    <div>
+      <div class="sc-title">Chai O'Clock Push</div>
+      <div class="sc-obj">Fire a personalised push at 3:45 PM on working days to intercept the competing tea-stall habit window. Tap opens the reorder card directly — merging push delivery with the S5 1-tap checkout flow</div>
+    </div>
+  </div>
+  <div class="sc-metrics">
+    <div class="sc-metric"><span style="font-size:16px">📲</span><div><div class="sc-metric-label">Push Open Rate</div><div class="sc-metric-val">≥ 20%</div></div></div>
+    <div class="sc-metric"><span style="font-size:16px">🛒</span><div><div class="sc-metric-label">Push → Order</div><div class="sc-metric-val">≥ 40%</div></div></div>
+    <div class="sc-metric"><span style="font-size:16px">🔕</span><div><div class="sc-metric-label">Opt-out Rate</div><div class="sc-metric-val">&lt; 1%</div></div></div>
+    <div class="sc-metric"><span style="font-size:16px">⏱</span><div><div class="sc-metric-label">Push Window</div><div class="sc-metric-val">3:45–4:00 PM</div></div></div>
+  </div>
+  <div class="sc-frs">
+    <span class="sc-fr-pill">FR-05 · Push Scheduling</span>
+    <span class="sc-fr-pill">FR-06 · Deep Link</span>
+    <span class="sc-fr-pill">FR-07 · Frequency Cap</span>
+    <span class="sc-fr-pill">FR-08 · Opt-out</span>
+    <span class="sc-fr-pill">→ merges into S5 checkout</span>
+  </div>
+</div>
+
+<!-- ═══ FLOW MAP ═══ -->
+<div class="flow-map">
+  <div class="fn active" id="fn-0">
+    <div class="fn-bubble" id="fb-0">FR-05<br>Push</div>
+    <div class="fn-label">Push<br>Scheduled</div>
+    <div class="fn-side">3:45 PM</div>
+  </div>
+  <div class="flow-arrow" id="fa-0">→</div>
+  <div class="fn" id="fn-1">
+    <div class="fn-bubble" id="fb-1">FR-06<br>Link</div>
+    <div class="fn-label">Push<br>Tapped</div>
+  </div>
+  <div class="flow-arrow" id="fa-1">→</div>
+  <div class="fn" id="fn-2">
+    <div class="fn-bubble" id="fb-2">FR-01<br>+03</div>
+    <div class="fn-label">Home<br>+ Card</div>
+  </div>
+  <div class="flow-arrow" id="fa-2">→</div>
+  <div class="fn" id="fn-3">
+    <div class="fn-bubble" id="fb-3">FR-02<br>+04</div>
+    <div class="fn-label">Reorder<br>Tap</div>
+  </div>
+  <div class="flow-arrow" id="fa-3">→</div>
+  <div class="fn" id="fn-4">
+    <div class="fn-bubble" id="fb-4">🛒</div>
+    <div class="fn-label">Cart</div>
+  </div>
+  <div class="flow-arrow" id="fa-4">→</div>
+  <div class="fn" id="fn-5">
+    <div class="fn-bubble" id="fb-5">✓</div>
+    <div class="fn-label">Confirmed</div>
+    <div class="fn-side">FR-07</div>
+  </div>
+</div>
+<div style="width:764px;margin-bottom:6px;display:flex;gap:8px;justify-content:flex-end">
+  <span style="font-size:10px;color:var(--amber);font-weight:600">⚙ FR-08 accessible via Profile tab → Notification Settings</span>
+</div>
+
+<!-- ═══ MAIN LAYOUT ═══ -->
+<div class="main-layout">
+
+  <!-- ── SCENARIO PANEL ── -->
+  <div class="scenario-panel">
+
+    <!-- Step 0: Push Delivery -->
+    <div class="step-box current" id="sb-0">
+      <div class="step-box-hdr">
+        <div class="sbn active" id="sbn-0">1</div>
+        <div>
+          <div class="step-box-title">Step 1 — Push Delivery (3:45 PM)</div>
+          <div class="step-box-fr">FR-05 · Push Scheduling &nbsp;+&nbsp; FR-07 · Frequency Cap</div>
+        </div>
+      </div>
+      <div class="sc-radio-group">
+        <label class="sc-radio selected" id="sr-0a" onclick="setPushScenario('A',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">✅ Eligible user (last order ≤15 days, Mon–Fri, non-holiday) → push delivered at 3:45 PM IST</div>
+            <div class="sc-radio-fr">FR-05 (eligible) + FR-07 (first push today)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-0b" onclick="setPushScenario('B',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">⛔ Ineligible user (last order >15 days ago) → push suppressed, eligibility table shown</div>
+            <div class="sc-radio-fr">FR-05 (ineligible — dead-end path)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-0c" onclick="setPushScenario('C',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">📅 Weekend / public holiday → push suppressed for today, resumes next working day</div>
+            <div class="sc-radio-fr">FR-05 (weekend suppression — dead-end path)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-0d" onclick="setPushScenario('D',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">🔕 User previously opted out of Chai O'Clock → push blocked · other notifications unaffected</div>
+            <div class="sc-radio-fr">FR-08B (opted-out suppression — dead-end path)</div>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Step 1: Deep Link -->
+    <div class="step-box locked" id="sb-1">
+      <div class="step-box-hdr">
+        <div class="sbn gray" id="sbn-1">2</div>
+        <div>
+          <div class="step-box-title">Step 2 — Push Tapped (Deep Link)</div>
+          <div class="step-box-fr">FR-06 · Deep Link to Reorder Card</div>
+        </div>
+      </div>
+      <div class="sc-radio-group" id="step1-opts">
+        <label class="sc-radio selected" id="sr-1a" onclick="setDeeplinkScenario('A',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">✅ Session active → app opens directly to home screen with reorder card in foreground</div>
+            <div class="sc-radio-fr">FR-06 (authenticated — no friction)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-1b" onclick="setDeeplinkScenario('B',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">🔒 User logged out → tap shows login screen → after OTP → redirected to reorder card</div>
+            <div class="sc-radio-fr">FR-06 (auth redirect — add friction)</div>
+          </div>
+        </label>
+      </div>
+      <div class="locked-msg" id="step1-locked-msg" style="display:none">Push not delivered — select Scenario A in Step 1</div>
+    </div>
+
+    <!-- Step 2: Home + Card -->
+    <div class="step-box locked" id="sb-2">
+      <div class="step-box-hdr">
+        <div class="sbn gray" id="sbn-2">3</div>
+        <div>
+          <div class="step-box-title">Step 3 — Home Screen + Reorder Card</div>
+          <div class="step-box-fr">FR-01 · 7-Day Window &nbsp;+&nbsp; FR-03 · Availability</div>
+        </div>
+      </div>
+      <div class="sc-radio-group" id="step2-opts">
+        <label class="sc-radio selected" id="sr-2a" onclick="setCardScenario('A',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">✅ Primary item (Masala Chai) in stock → reorder card shown</div>
+            <div class="sc-radio-fr">FR-01 (card visible) + FR-03 (primary available)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-2b" onclick="setCardScenario('B',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">⚠️ Primary unavailable → fallback card (Samosa) shown</div>
+            <div class="sc-radio-fr">FR-03 (fallback)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-2c" onclick="setCardScenario('C',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">⛔ Both unavailable → Browse CTA shown (FR-03 dead-end from push)</div>
+            <div class="sc-radio-fr">FR-03 (both unavail)</div>
+          </div>
+        </label>
+      </div>
+      <div class="locked-msg" id="step2-locked-msg" style="display:none">Complete Step 2 first</div>
+    </div>
+
+    <!-- Step 3: Reorder Tap -->
+    <div class="step-box locked" id="sb-3">
+      <div class="step-box-hdr">
+        <div class="sbn gray" id="sbn-3">4</div>
+        <div>
+          <div class="step-box-title">Step 4 — Reorder Tapped</div>
+          <div class="step-box-fr">FR-02 · One-Tap Add &nbsp;+&nbsp; FR-04 · Confirmation</div>
+        </div>
+      </div>
+      <div class="sc-radio-group" id="step3-opts">
+        <label class="sc-radio selected" id="sr-3a" onclick="setTapScenario('A',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">✅ Empty cart → direct add → toast &lt;300ms → cart screen</div>
+            <div class="sc-radio-fr">FR-02 (direct) + FR-04 (success)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-3b" onclick="setTapScenario('B',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">⚠️ Existing cart items → conflict prompt: Add to existing / Start fresh</div>
+            <div class="sc-radio-fr">FR-02 (conflict)</div>
+          </div>
+        </label>
+        <label class="sc-radio" id="sr-3c" onclick="setTapScenario('C',this)">
+          <div class="sc-radio-dot"></div>
+          <div>
+            <div class="sc-radio-label">❌ Network error → error state with retry · user stays on home</div>
+            <div class="sc-radio-fr">FR-04 (network error)</div>
+          </div>
+        </label>
+      </div>
+      <div class="locked-msg" id="step3-locked-msg" style="display:none">Only available when Steps 1–3 reach the reorder card</div>
+    </div>
+
+    <!-- FR-07 + FR-08 side callouts -->
+    <div class="side-callout">
+      <b>FR-07 · Frequency Cap</b><br>
+      After order confirmed: Chai O'Clock cap activates for the day. Resets midnight. Next working day fires again with updated last order content.
+    </div>
+    <div class="side-callout" style="margin-top:0">
+      <b>FR-08 · Notification Opt-out</b><br>
+      Profile tab → Notification Settings → granular Chai O'Clock toggle. Does NOT affect other notification types. Re-enabling resumes from next eligible weekday.
+    </div>
+
+  </div><!-- /scenario panel -->
+
+  <!-- ── PHONE ── -->
+  <div class="phone">
+
+    <!-- TOAST (lives above all panels) -->
+    <div class="toast" id="toast">
+      <span style="font-size:18px">✓</span>
+      <div>
+        <div style="font-weight:700">Added to cart!</div>
+        <div style="font-size:11px;opacity:.85">Taking you to checkout…</div>
+      </div>
+    </div>
+
+    <!-- CONFLICT MODAL -->
+    <div class="modal-backdrop" id="conflict-modal">
+      <div class="modal">
+        <div style="font-size:16px;font-weight:700;color:var(--black);margin-bottom:6px">You have items in your cart</div>
+        <div style="font-size:12px;color:var(--gd);margin-bottom:14px;line-height:1.5">Add this item to your existing cart, or clear it and start fresh?</div>
+        <div style="background:var(--gl);border-radius:14px;padding:12px;margin-bottom:12px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:20px">🥐</span>
+          <div><div style="font-size:11px;color:var(--gd)">Currently in cart</div><div style="font-size:13px;font-weight:600;color:var(--black)">Veg Puff × 2 · ₹78</div></div>
+        </div>
+        <button class="modal-btn" style="background:var(--purple);color:#fff" onclick="resolveConflict('merge')">Add to existing cart</button>
+        <button class="modal-btn" style="background:var(--gl);color:var(--gd)" onclick="resolveConflict('fresh')">Start fresh</button>
+        <button onclick="closeModal()" style="width:100%;padding:10px;background:none;border:none;font-size:13px;color:var(--gm);cursor:pointer;font-family:'Poppins',sans-serif">Cancel</button>
+      </div>
+    </div>
+
+    <!-- LOCK SCREEN -->
+    <div id="lock-screen" style="position:absolute;inset:0;z-index:10;overflow-y:auto;background:linear-gradient(160deg,#0D1B2E 0%,#1A2845 100%);">
+      <!-- rendered by JS -->
+    </div>
+
+    <!-- LOGIN PANEL -->
+    <div class="login-panel" id="login-panel">
+      <div class="sb-light"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+      <div style="padding:32px 24px;text-align:center">
+        <div style="font-size:32px;margin-bottom:12px">🔒</div>
+        <div style="font-size:22px;font-weight:700;color:var(--black);margin-bottom:6px">Welcome back</div>
+        <div style="font-size:13px;color:var(--gd);margin-bottom:20px;line-height:1.6">Log in to continue to your order</div>
+        <div style="background:var(--purple-ll);border-radius:14px;padding:14px;margin-bottom:16px;text-align:left">
+          <div style="font-size:11px;color:var(--gd);margin-bottom:6px">Mobile Number</div>
+          <div style="font-size:16px;font-weight:600;color:var(--black)">+91 98765 43210</div>
+        </div>
+        <div style="background:var(--gl);border-radius:14px;padding:14px;margin-bottom:20px;text-align:left">
+          <div style="font-size:11px;color:var(--gd);margin-bottom:6px">Enter OTP sent to your number</div>
+          <div style="font-size:24px;font-weight:700;color:var(--purple);letter-spacing:12px">• • • •</div>
+        </div>
+        <button style="width:100%;background:var(--purple);color:#fff;border:none;border-radius:100px;padding:14px;font-size:14px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer" onclick="doLogin()">Verify OTP & Continue</button>
+      </div>
+    </div>
+
+    <!-- HOME / APP PANEL -->
+    <div class="app-panel" id="app-panel">
+      <!-- dynamically rendered by renderHome() -->
+    </div>
+
+    <!-- CART PANEL -->
+    <div class="panel panel-cart" id="cart-panel">
+      <div class="sb-light"><span>3:46</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+      <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--gl);position:sticky;top:48px;z-index:9">
+        <button class="back-btn" onclick="goBack('cart-panel')">←</button>
+        <span style="font-size:17px;font-weight:700;color:var(--black)">Your Cart</span>
+      </div>
+      <div style="background:var(--gl);border-radius:10px;margin:10px 16px;padding:10px 14px;font-size:12px;color:var(--gd);display:flex;gap:8px">📍 Block B, Desk 24 · ~12 min</div>
+      <div id="cart-items-display"></div>
+      <div class="bill" id="cart-bill"></div>
+      <div style="margin:0 16px;background:#E8F8EF;border-radius:12px;padding:9px 14px;font-size:11px;color:var(--green);font-weight:500">🎉 Push promo: Free delivery today!</div>
+      <div style="padding:12px 16px"><button class="place-btn" onclick="placeOrder()">Place Order · <span id="cart-total">₹78</span></button></div>
+    </div>
+
+    <!-- CONFIRMED PANEL -->
+    <div class="panel panel-confirmed" id="confirmed-panel">
+      <div class="sb-light"><span>3:46</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+      <div style="padding:28px 24px;display:flex;flex-direction:column;align-items:center">
+        <div style="width:88px;height:88px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:18px;box-shadow:0 8px 32px rgba(46,160,90,.3)">✓</div>
+        <div style="font-size:22px;font-weight:700;color:var(--black);text-align:center">Order Placed!</div>
+        <div style="font-size:13px;color:var(--gd);text-align:center;margin-top:6px" id="confirmed-item-name">Your Masala Chai is being prepared</div>
+        <div style="background:#fff;border-radius:20px;padding:20px 24px;margin-top:16px;text-align:center;box-shadow:0 6px 24px rgba(92,29,145,.12);width:100%">
+          <div style="font-size:12px;color:var(--gd)">Estimated delivery</div>
+          <div style="font-size:40px;font-weight:700;color:var(--purple)">12 min</div>
+          <div style="font-size:12px;color:var(--gd)">Block B, Desk 24</div>
+        </div>
+        <div style="background:var(--purple-ll);border-radius:14px;padding:14px;margin-top:12px;width:100%;text-align:center">
+          <div style="font-size:13px;color:var(--purple);font-weight:600">☕ See you tomorrow at 3:45 PM!</div>
+          <div style="font-size:11px;color:var(--gd);margin-top:4px">We'll remind you again for your Chai O'Clock</div>
+        </div>
+        <button style="width:100%;background:var(--purple);color:#fff;border:none;border-radius:100px;padding:14px;font-size:14px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;margin-top:12px" onclick="backToHome()">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="settings-panel" id="settings-panel">
+      <div class="sb-light"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+      <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--gl);position:sticky;top:48px;z-index:9">
+        <button class="back-btn" onclick="closeSettings()">←</button>
+        <span style="font-size:16px;font-weight:700;color:var(--black)">Notification Settings</span>
+      </div>
+      <div style="padding:12px 0">
+        <div style="font-size:11px;font-weight:700;color:var(--gm);padding:6px 16px;letter-spacing:.5px">CHAI O'CLOCK</div>
+        <div class="toggle-row">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--black)">Chai O'Clock Reminder</div>
+            <div style="font-size:11px;color:var(--gd);margin-top:2px">3:45 PM daily · Mon–Fri · Your last order</div>
+          </div>
+          <div onclick="toggleChai()" style="cursor:pointer">
+            <div class="toggle-track on" id="chai-track"></div>
+            <div class="toggle-knob on" id="chai-knob" style="position:relative;top:-26px;left:23px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s"></div>
+          </div>
+        </div>
+        <div style="margin:0 16px 8px;font-size:11px;color:var(--green);font-weight:500" id="chai-on-note">Next reminder: tomorrow at 3:45 PM</div>
+        <div style="margin:0 16px 8px;font-size:11px;color:var(--gd)" id="chai-off-note" style="display:none">Chai O'Clock reminders are paused</div>
+
+        <div style="font-size:11px;font-weight:700;color:var(--gm);padding:14px 16px 6px;letter-spacing:.5px">OTHER NOTIFICATIONS</div>
+        <div class="toggle-row"><div><div style="font-size:14px;font-weight:600;color:var(--black)">Offers & Promotions</div><div style="font-size:11px;color:var(--gd);margin-top:2px">Deals and discounts</div></div><div><div class="toggle-track on" style="background:var(--purple)"></div></div></div>
+        <div class="toggle-row"><div><div style="font-size:14px;font-weight:600;color:var(--black)">Order Updates</div><div style="font-size:11px;color:var(--gd);margin-top:2px">Preparation, delivery status</div></div><div><div class="toggle-track on" style="background:var(--purple)"></div></div></div>
+        <div class="toggle-row"><div><div style="font-size:14px;font-weight:600;color:var(--black)">Ratings & Reviews</div><div style="font-size:11px;color:var(--gd);margin-top:2px">Rate your recent orders</div></div><div><div class="toggle-track on" style="background:var(--purple)"></div></div></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS TOAST -->
+    <div style="position:absolute;bottom:80px;left:16px;right:16px;background:var(--black);border-radius:14px;padding:12px 16px;color:#fff;font-size:12px;font-weight:500;text-align:center;transform:translateY(140%);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);z-index:300" id="settings-toast">Notification preference saved ✓</div>
+
+  </div><!-- /phone -->
+</div><!-- /main-layout -->
+
+<script>
+/* ── State ── */
+let pushScenario    = 'A'; // FR-05
+let deeplinkScenario = 'A'; // FR-06
+let cardScenario    = 'A'; // FR-01+03
+let tapScenario     = 'A'; // FR-02+04
+let currentStep     = 0;
+let chaiOn = true;
+
+const items = {
+  A:{ icon:'☕', name:'Masala Chai', sub:'Medium · Hot · 250ml', price:69, hdrClass:'primary' },
+  B:{ icon:'🧆', name:'Samosa (2 pc)', sub:'Fallback · Ordered 4 days ago', price:49, hdrClass:'fallback' }
+};
+
+/* ── RENDER LOCK SCREEN ── */
+function renderLock() {
+  const ls = document.getElementById('lock-screen');
+  let content = '';
+  if (pushScenario === 'A') {
+    content = `
+      <div class="sb-lock"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px;color:rgba(255,255,255,.7)">📶 🔋</div></div>
+      <div class="lock-time">3:45</div>
+      <div class="lock-date">Thursday, 3 July</div>
+      <div class="push-notif" style="margin-top:20px">
+        <div class="push-app-row">
+          <div class="push-app-icon">☕</div>
+          <span class="push-app-name">Zepto Café</span>
+          <span class="push-time">now</span>
+        </div>
+        <div class="push-title">☕ Chai O'Clock, Rishi!</div>
+        <div class="push-body">Your Masala Chai is one tap away. Order before 4 PM for fastest delivery.</div>
+      </div>
+      <button class="tap-push-btn" onclick="tapPush()">Tap push notification →</button>
+      <div style="height:40px"></div>`;
+  } else if (pushScenario === 'B') {
+    content = `
+      <div class="sb-lock"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px;color:rgba(255,255,255,.7)">📶 🔋</div></div>
+      <div class="lock-time">3:45</div>
+      <div class="lock-date">Thursday, 3 July</div>
+      <div class="no-push-msg">
+        <div style="font-size:32px;margin-bottom:8px">🔕</div>
+        <div style="font-weight:700;margin-bottom:6px">No reminder today</div>
+        <div>Order a Chai soon to get your daily Chai O'Clock reminders back.</div>
+      </div>`;
+  } else if (pushScenario === 'C') {
+    // Weekend
+    content = `
+      <div class="sb-lock"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px;color:rgba(255,255,255,.7)">📶 🔋</div></div>
+      <div class="lock-time">3:45</div>
+      <div class="lock-date">Saturday, 5 July</div>
+      <div class="no-push-msg">
+        <div style="font-size:32px;margin-bottom:8px">☕</div>
+        <div style="font-weight:700;margin-bottom:6px">Enjoy your weekend!</div>
+        <div>Your Chai O'Clock reminder resumes Monday at 3:45 PM.</div>
+      </div>`;
+  } else {
+    // FR-08B: Opted out
+    content = `
+      <div class="sb-lock"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px;color:rgba(255,255,255,.7)">📶 🔋</div></div>
+      <div class="lock-time">3:45</div>
+      <div class="lock-date">Thursday, 3 July</div>
+      <div style="margin:16px;background:rgba(198,40,40,.15);border:1px solid rgba(198,40,40,.35);border-radius:14px;padding:12px 14px;font-size:11px;color:#FF8A80;font-weight:600">
+        ✗ GIVEN: User toggled OFF Chai O'Clock in Notification Settings
+      </div>
+      <div style="margin:0 16px;background:rgba(255,255,255,.07);border-radius:16px;padding:14px;position:relative">
+        <div style="font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.5px;margin-bottom:8px">WHAT WOULD HAVE ARRIVED AT 3:45 PM:</div>
+        <div style="opacity:.3;filter:blur(1px)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <div style="width:24px;height:24px;background:var(--purple);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px">☕</div>
+            <span style="font-size:11px;font-weight:600;color:rgba(255,255,255,.7)">Zepto Café</span>
+            <span style="font-size:11px;color:rgba(255,255,255,.4);margin-left:auto">3:45 PM</span>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px">☕ Chai O'Clock, Rishi!</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.6)">Your Masala Chai is one tap away.</div>
+        </div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#C62828;color:#fff;font-size:10px;font-weight:800;padding:4px 14px;border-radius:100px;letter-spacing:.5px;white-space:nowrap">🔕 BLOCKED · FR-08</div>
+      </div>
+      <div style="margin:12px 16px;background:rgba(255,255,255,.06);border-radius:14px;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:8px">Other notifications arriving normally:</div>
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,.07);border-radius:10px">
+          <div style="width:26px;height:26px;background:#5D4037;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0">Z</div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#C8B0F0">Zepto · Order Update</div>
+            <div style="font-size:10px;color:rgba(200,180,240,.6)">Your Samosa is out for delivery · 3 min away</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin:0 16px;background:rgba(92,29,145,.2);border-radius:12px;padding:10px 14px;font-size:11px;color:var(--purple-l);font-weight:500;line-height:1.5">
+        ✓ THEN: Chai O'Clock push suppressed · Re-enable anytime via Profile → Notification Settings
+      </div>`;
+  }
+  ls.innerHTML = content;
+}
+
+/* ── TAP PUSH ── */
+function tapPush() {
+  if (deeplinkScenario === 'B') {
+    // show login
+    document.getElementById('login-panel').classList.add('show');
+    setFlowStep(1);
+  } else {
+    // direct to home
+    renderHome();
+    document.getElementById('app-panel').classList.add('show');
+    setFlowStep(2);
+    unlockStepsFrom(2);
+  }
+}
+
+/* ── LOGIN ── */
+function doLogin() {
+  document.getElementById('login-panel').classList.remove('show');
+  renderHome();
+  document.getElementById('app-panel').classList.add('show');
+  setFlowStep(2);
+  unlockStepsFrom(2);
+}
+
+/* ── RENDER HOME ── */
+function renderHome() {
+  const panel = document.getElementById('app-panel');
+  const s = cardScenario;
+  const item = items[s] || items['A'];
+
+  let cardHTML = '';
+
+  if (s === 'C') {
+    cardHTML = `
+      <div class="rc">
+        <div class="rc-hdr" style="background:#757575"><span>⚠️</span><span class="pill">YOUR USUAL</span><span style="font-size:11px;color:rgba(255,255,255,.7);margin-left:auto">unavailable</span></div>
+        <div style="padding:16px">
+          <div style="text-align:center;padding:8px 0 4px;font-size:36px">😔</div>
+          <div style="text-align:center;font-size:15px;font-weight:700;color:var(--black)">Your usual isn't available</div>
+          <div style="text-align:center;font-size:12px;color:var(--gd);margin:6px 0 16px;line-height:1.6">Both Masala Chai and Samosa (2 pc) are out of stock right now.</div>
+          <button class="reorder-btn" style="background:#455A64" onclick="openCatPanel()">Browse Hot Beverages →</button>
+        </div>
+      </div>`;
+  } else {
+    const unavailChip = s === 'B' ? `<div style="display:inline-flex;align-items:center;gap:5px;background:#FFF3E0;border-radius:20px;padding:4px 10px;font-size:11px;color:#E65100;font-weight:500;margin-bottom:10px"><span style="width:6px;height:6px;background:#E65100;border-radius:50%;display:inline-block"></span>Masala Chai unavailable — showing your next usual</div>` : '';
+    cardHTML = `
+      <div class="rc" id="reorder-card">
+        <div class="rc-hdr ${item.hdrClass}"><span style="font-size:14px">⚡</span><span class="pill">YOUR USUAL</span><span style="font-size:12px;color:rgba(255,255,255,.7);margin-left:auto">tap to reorder</span></div>
+        <div style="padding:16px">
+          ${unavailChip}
+          <div class="item-row">
+            <div class="item-icon">${item.icon}</div>
+            <div style="flex:1"><div class="item-name">${item.name}</div><div class="item-sub">${item.sub}</div><div style="color:var(--amber);font-size:13px">★★★★☆</div><div class="item-price">₹${item.price} <span style="font-size:11px;font-weight:400;color:var(--green)">free delivery</span></div></div>
+          </div>
+          <button class="reorder-btn" id="reorder-btn-main" onclick="onReorderTap()">Reorder in 1 tap →</button>
+          <div class="error-card" id="error-card" style="display:none">
+            <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:4px">⚠ Couldn't add to cart</div>
+            <div style="font-size:12px;color:#7B0000;margin-bottom:12px;line-height:1.5">Something went wrong. Please try again.</div>
+            <button class="retry-btn" onclick="retryTap()">↺ Retry</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  panel.innerHTML = `
+    <div class="sb-light"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+    <div class="ab" style="top:48px"><div style="display:flex;align-items:baseline"><span style="font-size:20px;font-weight:800;color:var(--purple)">zepto</span><span style="font-size:17px;font-weight:300;color:var(--purple-d)"> café</span></div>
+    <div style="position:relative"><div style="width:36px;height:36px;background:var(--gl);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;position:relative"><span id="home-cart-icon">🛒</span><div id="home-cart-badge" style="display:none;position:absolute;top:-2px;right:-2px;width:16px;height:16px;background:var(--amber);border-radius:50%;font-size:9px;font-weight:700;color:#fff;align-items:center;justify-content:center">1</div></div></div></div>
+    <div style="padding:12px 16px 4px;font-size:14px;font-weight:600;color:var(--black)">Good afternoon, Rishi 👋</div>
+    <div style="padding:0 16px 10px;font-size:12px;color:var(--gd)">Your Chai O'Clock reminder — 3:45 PM</div>
+    ${cardHTML}
+    <div class="bnav">
+      <div class="ni active"><span class="ico">🏠</span>Home</div>
+      <div class="ni"><span class="ico">🔍</span>Search</div>
+      <div class="ni"><span class="ico">🛒</span>Cart</div>
+      <div class="ni" onclick="openSettings()"><span class="ico">👤</span>Profile</div>
+    </div>`;
+}
+
+/* ── REORDER TAP ── */
+function onReorderTap() {
+  setFlowStep(3);
+  if (tapScenario === 'C') {
+    const btn = document.getElementById('reorder-btn-main');
+    btn.className = 'reorder-btn loading';
+    btn.innerHTML = '<span class="spinner"></span>Adding…';
+    setTimeout(() => { btn.style.display='none'; document.getElementById('error-card').style.display='block'; }, 1200);
+    return;
+  }
+  if (tapScenario === 'B') {
+    document.getElementById('conflict-modal').classList.add('show');
+    return;
+  }
+  fireToast();
+  setTimeout(() => openCart('empty'), 1200);
+}
+
+function retryTap() {
+  const btn = document.getElementById('reorder-btn-main');
+  document.getElementById('error-card').style.display = 'none';
+  btn.style.display = 'block';
+  btn.className = 'reorder-btn';
+  btn.innerHTML = '↺ Retry reorder';
+}
+
+function fireToast() {
+  const badge = document.getElementById('home-cart-badge');
+  if (badge) badge.style.display = 'flex';
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+function resolveConflict(type) {
+  closeModal();
+  fireToast();
+  setTimeout(() => openCart(type), 1200);
+}
+function closeModal() { document.getElementById('conflict-modal').classList.remove('show'); }
+
+function openCart(type) {
+  const item = items[cardScenario] || items['A'];
+  let allItems = [{ icon: item.icon, name: item.name, price: item.price, qty: 1 }];
+  if (type === 'merge') allItems = [{ icon: '🥐', name: 'Veg Puff', price: 39, qty: 2 }, ...allItems];
+  const subtotal = allItems.reduce((s,i) => s + i.price*(i.qty||1), 0);
+  const gst = Math.round(subtotal * 0.09);
+  const total = subtotal + gst + 3;
+  let itemsHTML = allItems.map(i => `
+    <div class="cart-item-wrap" style="margin-bottom:10px">
+      <div style="width:54px;height:54px;border-radius:14px;background:var(--amber-l);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">${i.icon}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--black)">${i.name}</div><div style="font-size:11px;color:var(--gd);margin-top:2px">Qty: ${i.qty||1}</div><div style="font-size:15px;font-weight:700;color:var(--purple)">₹${i.price*(i.qty||1)}</div></div>
+    </div>`).join('');
+  document.getElementById('cart-items-display').innerHTML = itemsHTML;
+  document.getElementById('cart-bill').innerHTML = `
+    <div style="font-size:14px;font-weight:700;color:var(--black);margin-bottom:10px">Bill Details</div>
+    <div class="bill-row"><span style="color:var(--gd)">Item total</span><span>₹${subtotal}</span></div>
+    <div class="bill-row"><span style="color:var(--gd)">Delivery</span><span style="color:var(--green)">FREE</span></div>
+    <div class="bill-row"><span style="color:var(--gd)">Platform fee</span><span>₹3</span></div>
+    <div class="bill-row"><span style="color:var(--gd)">GST</span><span>₹${gst}</span></div>
+    <div class="bill-row bill-total"><span>Total</span><span style="color:var(--purple)">₹${total}</span></div>`;
+  document.getElementById('cart-total').textContent = `₹${total}`;
+  document.getElementById('confirmed-item-name').textContent = `Your ${item.name} is being prepared`;
+  setFlowStep(4);
+  document.getElementById('cart-panel').classList.add('show');
+}
+
+function placeOrder() {
+  document.getElementById('cart-panel').classList.remove('show');
+  setFlowStep(5);
+  document.getElementById('confirmed-panel').classList.add('show');
+}
+
+function goBack(id) {
+  document.getElementById(id).classList.remove('show');
+  setFlowStep(id === 'cart-panel' ? 3 : 2);
+}
+
+function backToHome() {
+  document.getElementById('confirmed-panel').classList.remove('show');
+  document.getElementById('cart-panel').classList.remove('show');
+  renderHome();
+  setFlowStep(2);
+}
+
+function openCatPanel() {
+  // Quick category overlay
+  const panel = document.getElementById('app-panel');
+  const overlay = document.createElement('div');
+  overlay.id = 'cat-overlay';
+  overlay.style.cssText = 'position:absolute;inset:0;background:var(--off);z-index:200;overflow-y:auto;transform:translateX(100%);transition:transform .3s';
+  overlay.innerHTML = `
+    <div class="sb-light"><span>3:45</span><div style="font-size:11px;display:flex;gap:6px">📶 🔋</div></div>
+    <div style="background:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--gl)"><button class="back-btn" onclick="document.getElementById('cat-overlay').remove()">←</button><span style="font-size:16px;font-weight:700;color:var(--black)">Hot Beverages</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px">
+      ${[['🍵','Green Tea','₹49'],['☕','Filter Coffee','₹59'],['🫖','Lemon Tea','₹39'],['🧃','Matcha','₹89'],['🥛','Cold Coffee','₹79'],['🍶','Tulsi Chai','₹45']].map(([e,n,p])=>`<div style="background:#fff;border-radius:14px;padding:14px;box-shadow:0 4px 12px rgba(92,29,145,.08);text-align:center"><div style="font-size:28px;margin-bottom:6px">${e}</div><div style="font-size:12px;font-weight:600;color:var(--black)">${n}</div><div style="font-size:13px;font-weight:700;color:var(--purple);margin-top:4px">${p}</div><button style="margin-top:8px;background:var(--purple);color:#fff;border:none;border-radius:100px;padding:5px 14px;font-size:11px;font-weight:600;font-family:Poppins,sans-serif;cursor:pointer">Add</button></div>`).join('')}
+    </div>`;
+  panel.appendChild(overlay);
+  setTimeout(() => overlay.style.transform = 'translateX(0)', 10);
+}
+
+function openSettings() {
+  document.getElementById('settings-panel').classList.add('show');
+}
+function closeSettings() {
+  document.getElementById('settings-panel').classList.remove('show');
+}
+
+let chaiIsOn = true;
+function toggleChai() {
+  chaiIsOn = !chaiIsOn;
+  const track = document.getElementById('chai-track');
+  const knob = document.getElementById('chai-knob');
+  if (chaiIsOn) {
+    track.style.background = 'var(--purple)';
+    knob.style.left = '23px';
+    document.getElementById('chai-on-note').style.display = 'block';
+    document.getElementById('chai-off-note').style.display = 'none';
+  } else {
+    track.style.background = '#ccc';
+    knob.style.left = '3px';
+    document.getElementById('chai-on-note').style.display = 'none';
+    document.getElementById('chai-off-note').style.display = 'block';
+  }
+  const t = document.getElementById('settings-toast');
+  t.textContent = chaiIsOn ? 'Chai O\'Clock enabled ✓' : 'Chai O\'Clock paused ✓';
+  t.style.transform = 'translateY(0)'; t.style.opacity = '1';
+  setTimeout(() => { t.style.transform = 'translateY(140%)'; t.style.opacity = '0'; }, 2500);
+}
+
+/* ── FLOW MAP ── */
+function setFlowStep(step) {
+  currentStep = step;
+  [0,1,2,3,4,5].forEach(i => {
+    const fn = document.getElementById('fn-'+i);
+    const fa = document.getElementById('fa-'+i);
+    if (!fn) return;
+    fn.classList.remove('active','done');
+    if (i < step) { fn.classList.add('done'); if(fa) fa.classList.add('done'); }
+    else if (i === step) { fn.classList.add('active'); if(fa) fa.classList.remove('done'); }
+    else { if(fa) fa.classList.remove('done'); }
+  });
+}
+
+/* ── STEP PANEL LOCKING ── */
+function unlockStepsFrom(step) {
+  if (step >= 2) {
+    document.getElementById('sb-2').classList.remove('locked');
+    document.getElementById('sbn-2').className = 'sbn active';
+    document.getElementById('step2-locked-msg').style.display = 'none';
+    document.getElementById('step2-opts').style.display = 'flex';
+  }
+  if (step >= 3) {
+    const canTap = cardScenario === 'A' || cardScenario === 'B';
+    if (canTap) {
+      document.getElementById('sb-3').classList.remove('locked');
+      document.getElementById('sbn-3').className = 'sbn active';
+      document.getElementById('step3-locked-msg').style.display = 'none';
+      document.getElementById('step3-opts').style.display = 'flex';
+    }
+  }
+}
+
+/* ── SCENARIO SETTERS ── */
+function setPushScenario(s, el) {
+  pushScenario = s;
+  setAllSelected('sr-0', el); // covers sr-0a, sr-0b, sr-0c, sr-0d
+  const canProceed = s === 'A'; // B, C, D are dead-end paths
+  // Step 1 (deeplink)
+  ['sb-1','sb-2','sb-3'].forEach(id => { document.getElementById(id).classList.add('locked'); });
+  ['sbn-1','sbn-2','sbn-3'].forEach(id => { document.getElementById(id).className = 'sbn gray'; });
+  document.getElementById('step1-opts').style.display = canProceed ? 'flex' : 'none';
+  document.getElementById('step1-locked-msg').style.display = canProceed ? 'none' : 'block';
+  document.getElementById('step2-locked-msg').style.display = 'block';
+  document.getElementById('step2-opts').style.display = 'none';
+  document.getElementById('step3-locked-msg').style.display = 'block';
+  document.getElementById('step3-opts').style.display = 'none';
+  if (canProceed) { document.getElementById('sb-1').classList.remove('locked'); document.getElementById('sbn-1').className = 'sbn active'; }
+  // Reset phone
+  document.getElementById('login-panel').classList.remove('show');
+  document.getElementById('app-panel').classList.remove('show');
+  document.getElementById('cart-panel').classList.remove('show');
+  document.getElementById('confirmed-panel').classList.remove('show');
+  setFlowStep(0);
+  renderLock();
+}
+
+function setDeeplinkScenario(s, el) {
+  deeplinkScenario = s;
+  setAllSelected('sr-1', el);
+}
+
+function setCardScenario(s, el) {
+  cardScenario = s;
+  setAllSelected('sr-2', el);
+  const canTap = s === 'A' || s === 'B';
+  const sb3 = document.getElementById('sb-3');
+  const opts3 = document.getElementById('step3-opts');
+  const msg3 = document.getElementById('step3-locked-msg');
+  if (canTap) {
+    sb3.classList.remove('locked');
+    document.getElementById('sbn-3').className = 'sbn active';
+    opts3.style.display = 'flex';
+    msg3.style.display = 'none';
+  } else {
+    sb3.classList.add('locked');
+    opts3.style.display = 'none';
+    msg3.style.display = 'block';
+  }
+  if (document.getElementById('app-panel').classList.contains('show')) {
+    renderHome();
+  }
+}
+
+function setTapScenario(s, el) {
+  tapScenario = s;
+  setAllSelected('sr-3', el);
+}
+
+function setAllSelected(prefix, el) {
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+/* ── INIT ── */
+renderLock();
+</script>
+</body>
+</html>
