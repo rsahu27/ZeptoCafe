@@ -69,7 +69,7 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
 .sec-desc{font-size:14.5px;color:var(--gd);line-height:1.7;max-width:760px;margin-bottom:28px;}
 
 /* cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;}
 .card{background:#fff;border:1px solid var(--gl);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px;transition:all .25s;position:relative;overflow:hidden;}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--purple),var(--amber));opacity:0;transition:opacity .25s;}
 .card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(92,29,145,.13);border-color:var(--purple-l);}
@@ -82,6 +82,15 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
 .card-link:hover{color:var(--amber-d);}
 .card-link svg{transition:transform .2s;}
 .card-link:hover svg{transform:translateX(3px);}
+
+/* full-width horizontal card (single-document sections) */
+.card.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:24px;padding:28px 32px;}
+.card.wide .card-body{flex:1;display:flex;flex-direction:column;gap:8px;}
+.card.wide .card-icon{flex-shrink:0;width:54px;height:54px;font-size:26px;}
+.card.wide h3{padding-right:70px;}
+.card.wide p{flex:initial;}
+.card.wide .card-link{white-space:nowrap;flex-shrink:0;background:var(--purple-ll);padding:11px 22px;border-radius:100px;margin-top:0;}
+.card.wide .card-link:hover{background:var(--purple-l);color:var(--purple);}
 
 /* survey highlight cards */
 .card.survey{background:linear-gradient(135deg,#FFFDF6 0%,#FFF7E4 100%);border-color:#F4E3B8;}
@@ -113,6 +122,9 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
   .nav-links{display:none;}
   .card h3{padding-right:0;}
   .card-tag{position:static;align-self:flex-start;order:-1;}
+  .card.wide{flex-direction:column;align-items:flex-start;}
+  .card.wide h3{padding-right:0;}
+  .card.wide .card-link{align-self:flex-start;}
 }
 </style>
 </head>
@@ -223,11 +235,13 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
       <div class="sec-head"><span class="sec-num">STEP 2</span><h2>Frame the Problem</h2></div>
       <p class="sec-desc">Articulating why office workers don't return for a second order. Grounded entirely in the primary research and competitive analysis — the trial–repeat gap emerges as the single most important structural finding of the case study.</p>
       <div class="grid">
-        <div class="card">
+        <div class="card wide">
           <span class="card-tag">PDF</span>
           <div class="card-icon">🎯</div>
-          <h3>Problem Framing Document</h3>
-          <p>The trial–repeat gap, the friction points that cause it, and a precisely-scoped problem statement — every claim traced back to evidence.</p>
+          <div class="card-body">
+            <h3>Problem Framing Document</h3>
+            <p>The trial–repeat gap, the friction points that cause it, and a precisely-scoped problem statement — every claim traced back to evidence.</p>
+          </div>
           <a class="card-link" href="Frame_the_Problem.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
@@ -238,11 +252,13 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
       <div class="sec-head"><span class="sec-num">STEP 3</span><h2>Solution Ideation &amp; Prioritization</h2></div>
       <p class="sec-desc">15 product interventions ideated against the friction points from Step 2, scored with the RICE framework, and shortlisted to the 2 solutions that were carried into the PRD: <strong>S5 — Your Usual Reorder Card</strong> and <strong>S1 — Chai O'Clock Push Notification</strong>.</p>
       <div class="grid">
-        <div class="card">
+        <div class="card wide">
           <span class="card-tag">PDF</span>
           <div class="card-icon">💡</div>
-          <h3>Ideation &amp; RICE Prioritization</h3>
-          <p>All 15 interventions grouped by friction point, full RICE scoring methodology, and the rationale behind the final shortlist of two.</p>
+          <div class="card-body">
+            <h3>Ideation &amp; RICE Prioritization</h3>
+            <p>All 15 interventions grouped by friction point, full RICE scoring methodology, and the rationale behind the final shortlist of two.</p>
+          </div>
           <a class="card-link" href="Solution_Ideation_Prioritization.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
@@ -296,11 +312,13 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
       <div class="sec-head"><span class="sec-num">STEP 5</span><h2>GTM Strategy, Growth Loop &amp; Monetization</h2></div>
       <p class="sec-desc">How repeat ordering launches, grows, and creates business impact — the go-to-market plan, the self-reinforcing growth loop, and the monetization story behind the 12% → 25% target.</p>
       <div class="grid">
-        <div class="card">
+        <div class="card wide">
           <span class="card-tag">PDF</span>
           <div class="card-icon">🚀</div>
-          <h3>GTM Strategy Document</h3>
-          <p>Launch phasing, growth loop design, and monetization levers — defining how the habit loop compounds into business value.</p>
+          <div class="card-body">
+            <h3>GTM Strategy Document</h3>
+            <p>Launch phasing, growth loop design, and monetization levers — defining how the habit loop compounds into business value.</p>
+          </div>
           <a class="card-link" href="GTM_Strategy.pdf" target="_blank">Open strategy <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
@@ -311,11 +329,13 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
       <div class="sec-head"><span class="sec-num">STEP 6</span><h2>Metrics &amp; Success Measurement</h2></div>
       <p class="sec-desc">How we know the habit loop is working — and how we protect what we already have. North-star and guardrail metrics, instrumentation, and the measurement plan for the 30-day repeat rate.</p>
       <div class="grid">
-        <div class="card">
+        <div class="card wide">
           <span class="card-tag">PDF</span>
           <div class="card-icon">📈</div>
-          <h3>Metrics &amp; Measurement Plan</h3>
-          <p>Success metrics, counter-metrics and guardrails — a measurement framework that proves impact without cannibalising existing behaviour.</p>
+          <div class="card-body">
+            <h3>Metrics &amp; Measurement Plan</h3>
+            <p>Success metrics, counter-metrics and guardrails — a measurement framework that proves impact without cannibalising existing behaviour.</p>
+          </div>
           <a class="card-link" href="Metrics_Success_Measurement.pdf" target="_blank">Open plan <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
@@ -326,11 +346,13 @@ body{font-family:'Poppins',sans-serif;background:var(--purple-dd);color:var(--in
       <div class="sec-head"><span class="sec-num">STEP 7</span><h2>Risks, Trade-offs &amp; Constraints</h2></div>
       <p class="sec-desc">Demonstrating PM judgment: what could fail, what we deliberately chose not to optimise for, and the constraints that shaped every solution decision along the way.</p>
       <div class="grid">
-        <div class="card">
+        <div class="card wide">
           <span class="card-tag">PDF</span>
           <div class="card-icon">⚖️</div>
-          <h3>Risks &amp; Trade-offs Document</h3>
-          <p>Failure modes, mitigations, explicit non-goals, and the constraints that filtered the solution space from day one.</p>
+          <div class="card-body">
+            <h3>Risks &amp; Trade-offs Document</h3>
+            <p>Failure modes, mitigations, explicit non-goals, and the constraints that filtered the solution space from day one.</p>
+          </div>
           <a class="card-link" href="Risks_Tradeoffs_Constraints.pdf" target="_blank">Open document <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
         </div>
       </div>
